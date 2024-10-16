@@ -31,6 +31,7 @@ public class Filosofo extends Task<List<RegionColor>> {
        thread = new Thread(new TaskCome());
        thread.setDaemon(true);
        thread.start();
+
     }
 
     @Override
@@ -51,11 +52,18 @@ public class Filosofo extends Task<List<RegionColor>> {
         @Override
         protected List<RegionColor> call() throws Exception {
             while (true){
-                updateValue(Arrays.asList(new RegionColor(label,Color.GREEN),new RegionColor(tenedor1.getLabel(),Color.RED),new RegionColor(tenedor2.getLabel(),Color.RED)));
-                Thread.sleep(2000);
+                synchronized(tenedor1){
+                    synchronized(tenedor2){
+                        //comiendo
+                        updateValue(Arrays.asList(new RegionColor(label,Color.GREEN),new RegionColor(tenedor1.getLabel(),Color.GREEN),new RegionColor(tenedor2.getLabel(),Color.GREEN)));
+                        Thread.sleep(3000);
+                        //durmiendo
+                        updateValue(Arrays.asList(new RegionColor(label,Color.RED),new RegionColor(tenedor1.getLabel(),Color.RED),new RegionColor(tenedor2.getLabel(),Color.RED)));
+                        Thread.sleep(5000);
+                    }
+                }
+
             }
         }
     }
-
-
 }
