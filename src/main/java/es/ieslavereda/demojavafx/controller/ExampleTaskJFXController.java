@@ -53,11 +53,11 @@ public class ExampleTaskJFXController {
     }
     @FXML
     public void initialize(){
-        t1 = new Tenedor(tenedor1, 1);
-        t2 = new Tenedor(tenedor2, 2);
-        t3 = new Tenedor(tenedor3, 3);
-        t4 = new Tenedor(tenedor4, 4);
-        t5 = new Tenedor(tenedor5, 5);
+        t1 = new Tenedor(tenedor1);
+        t2 = new Tenedor(tenedor2);
+        t3 = new Tenedor(tenedor3);
+        t4 = new Tenedor(tenedor4);
+        t5 = new Tenedor(tenedor5);
 
         f1 = new Filosofo(filosofo1, t1, t5);
         f2 = new Filosofo(filosofo2, t1, t2);
@@ -70,17 +70,5 @@ public class ExampleTaskJFXController {
         f3.comer();
         f4.comer();
         f5.comer();
-
-
-
     }
-
-    @FXML
-    protected void onHelloButtonClick() {
-        if(!thread.isAlive())
-            thread.start();
-
-    }
-
-
 }

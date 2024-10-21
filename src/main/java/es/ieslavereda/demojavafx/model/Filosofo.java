@@ -29,93 +29,48 @@ public class Filosofo {
         thread.start();
     }
 
-    private class TaskCome extends Task<List<RegionColor>> {
+    private class TaskCome extends Task<RegionColor> {
 
-        public TaskCome(){
+        public TaskCome() {
             valueProperty().addListener((observableValue, regionColor, newValue) -> {
-                for (RegionColor value : newValue) {
-                    value.getRegion().setBackground(new Background(new BackgroundFill(value.getColor(), new CornerRadii(5), new Insets(-5))));
+                if (newValue != null) {
+                    newValue.getRegion().setBackground(new Background(new BackgroundFill(newValue.getColor(), new CornerRadii(5), new Insets(-5))));
                 }
             });
+
         }
+
         @Override
-        protected List<RegionColor> call() throws Exception {
+        protected RegionColor call() throws Exception {
             while (true) {
-                // Intentar coger el tenedor izquierdo
                 synchronized (tenedorIzquierdo) {
-                    if (tenedorIzquierdo.isDisponible()) {
-                        tenedorIzquierdo.coger();
-                        updateValue(Arrays.asList(
-                                new RegionColor(label, Color.BLUE), // Azul al coger el tenedor izquierdo
-                                new RegionColor(tenedorIzquierdo.getLabel(), Color.RED) // Tenedor izquierdo a rojo
-                        ));
+                    updateValue(new RegionColor(label, Color.RED));
+                    thread.sleep(1);
+                    updateValue(new RegionColor(tenedorIzquierdo.getLabel(), Color.RED));
+                    thread.sleep(1);
 
-                        // Intentar coger el tenedor derecho
-                        synchronized (tenedorDerecho) {
-                            if (tenedorDerecho.isDisponible()) {
-                                tenedorDerecho.coger();
 
-                                // Ambos tenedores están cogidos, cambiar a verde
-                                updateValue(Arrays.asList(
-                                        new RegionColor(label, Color.GREEN), // Filósofo a verde
-                                        new RegionColor(tenedorIzquierdo.getLabel(), Color.GREEN),
-                                        new RegionColor(tenedorDerecho.getLabel(), Color.GREEN)
-                                ));
+                    synchronized (tenedorDerecho) {
+                        updateValue(new RegionColor(label, Color.GREEN));
+                        thread.sleep(1);
+                        updateValue(new RegionColor(tenedorIzquierdo.getLabel(), Color.GREEN));
+                        thread.sleep(1);
 
-                                // Tiempo de comer
-                                Thread.sleep(3000); // Simula el tiempo de comer
+                        updateValue(new RegionColor(tenedorDerecho.getLabel(), Color.GREEN));
+                        thread.sleep(1);
 
-                                // Liberar tenedores
-                                tenedorDerecho.soltar();
-                                tenedorIzquierdo.soltar();
-                            } else {
-                                // Si no se puede coger el derecho, se queda en azul
-                                updateValue(Arrays.asList(
-                                        new RegionColor(label, Color.BLUE), // Filósofo en azul
-                                        new RegionColor(tenedorIzquierdo.getLabel(), Color.RED) // Tenedor izquierdo en rojo
-                                ));
-
-                                // Mantener el tenedor izquierdo mientras espera
-                                while (!tenedorDerecho.isDisponible()) {
-                                    Thread.sleep(100); // Esperar un tiempo antes de volver a intentar
-                                }
-
-                                // Intentar coger de nuevo el tenedor derecho
-                                synchronized (tenedorDerecho) {
-                                    tenedorDerecho.coger();
-                                    updateValue(Arrays.asList(
-                                            new RegionColor(tenedorDerecho.getLabel(), Color.RED) // Tenedor derecho a rojo
-                                    ));
-
-                                    // Ambos tenedores están cogidos, cambiar a verde
-                                    updateValue(Arrays.asList(
-                                            new RegionColor(label, Color.GREEN), // Filósofo a verde
-                                            new RegionColor(tenedorIzquierdo.getLabel(), Color.GREEN),
-                                            new RegionColor(tenedorDerecho.getLabel(), Color.GREEN)
-                                    ));
-
-                                    // Tiempo de comer
-                                    Thread.sleep(3000); // Simula el tiempo de comer
-
-                                    // Liberar tenedores
-                                    tenedorDerecho.soltar();
-                                    tenedorIzquierdo.soltar();
-                                }
-                            }
-                        }
+                        Thread.sleep(3000);
+                        updateValue(new RegionColor(label, Color.TRANSPARENT));
+                        thread.sleep(1);
+                        updateValue(new RegionColor(tenedorIzquierdo.getLabel(), Color.TRANSPARENT));
+                        thread.sleep(1);
+                        updateValue(new RegionColor(tenedorDerecho.getLabel(), Color.TRANSPARENT));
+                        thread.sleep(1);
                     }
                 }
-
-                // Volver a rojo para la siesta
-                updateValue(Arrays.asList(
-                        new RegionColor(label, Color.RED), // Filósofo a rojo
-                        new RegionColor(tenedorIzquierdo.getLabel(), Color.RED),
-                        new RegionColor(tenedorDerecho.getLabel(), Color.RED)
-                ));
-
-                // Tiempo de siesta
-                Thread.sleep(5000); // Simula el tiempo de siesta
+                thread.sleep(5000);
             }
         }
     }
 }
+
